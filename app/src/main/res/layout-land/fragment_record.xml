@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+        android:id="@+id/ll_menus"
+        android:layout_width="@dimen/y185"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/x140"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ImageView
+            android:id="@+id/iv_record"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@mipmap/icon_rec_on" />
+
+        <ImageView
+            android:id="@+id/iv_takephoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@mipmap/icon_takephoto" />
+
+        <ImageView
+            android:id="@+id/iv_mic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:src="@mipmap/icon_mic_on" />
+
+        <ImageView
+            android:id="@+id/iv_setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1.2"
+            android:src="@mipmap/icon_setting" />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/ll_menus">
+
+
+        <SurfaceView
+            android:id="@+id/sv_recordVideo"
+            android:layout_width="@dimen/y1080"
+            android:layout_height="@dimen/x600"
+            android:layout_marginTop="@dimen/x22"/>
+
+        <!--<ImageView-->
+            <!--android:id="@+id/iv_photo_focus"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:src="@mipmap/photo_focus"-->
+            <!--android:visibility="invisible" />-->
+
+        <!--<RelativeLayout-->
+            <!--android:id="@+id/record_bg"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="@dimen/x422"-->
+            <!--android:background="@mipmap/bg_thumb">-->
+
+            <!--<ImageView-->
+                <!--android:id="@+id/record_loading"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_centerInParent="true"-->
+                <!--android:src="@mipmap/loading_large" />-->
+        <!--</RelativeLayout>-->
+
+        <!--<LinearLayout-->
+            <!--android:id="@+id/isRec"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_alignParentEnd="true"-->
+            <!--android:layout_marginEnd="@dimen/x10"-->
+            <!--android:layout_marginTop="@dimen/x10"-->
+            <!--android:background="@mipmap/bg_is_rec"-->
+            <!--android:visibility="invisible">-->
+
+            <!--<ImageView-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_vertical"-->
+                <!--android:layout_marginStart="@dimen/x20"-->
+                <!--android:src="@mipmap/rec" />-->
+
+
+            <!--<TextView-->
+                <!--android:id="@+id/textViewRecordTime"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center_vertical"-->
+                <!--android:layout_marginStart="@dimen/x20"-->
+                <!--android:text="00:00:00"-->
+                <!--android:textColor="#fff"-->
+                <!--android:textSize="@dimen/x25" />-->
+        <!--</LinearLayout>-->
+    </RelativeLayout>
+
+
+</RelativeLayout>

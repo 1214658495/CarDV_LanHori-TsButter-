@@ -1,0 +1,656 @@
+package com.bydauto.tsbutter.Fragment;
+
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
+import android.util.LruCache;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bydauto.tsbutter.Connect.IFragmentListener;
+import com.bydauto.tsbutter.Model;
+import com.bydauto.tsbutter.R;
+import com.bydauto.tsbutter.RemoteCam;
+import com.bydauto.tsbutter.Unit.ServerConfig;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.Unbinder;
+
+//import static android.widget.AdapterView.*;
+
+/**
+ * Created by byd_tw on 2017/9/11.
+ */
+
+public class GridViewFragment extends Fragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+    private static final String TAG = "GridViewFragment";
+
+    @BindView(R.id.gv_gridView)
+    GridView gvGridView;
+
+    //    @BindView(R.id.refreshView)
+    public SwipeRefreshLayout refreshView;
+
+    @BindView(R.id.iv_cancel)
+    ImageView ivCancel;
+    @BindView(R.id.iv_share)
+    ImageView ivShare;
+    @BindView(R.id.iv_export)
+    ImageView ivExport;
+    @BindView(R.id.iv_delect)
+    ImageView ivDelect;
+    @BindView(R.id.iv_select)
+    ImageView ivSelect;
+    private ArrayList<Model> mPlaylist;
+
+    private Unbinder unbinder;
+
+    private List<Model> modelList = new ArrayList<>();
+
+    private RemoteCam mRemoteCam;
+    private String mPwd;
+
+    private IFragmentListener mFragmentListener;
+
+    public int currentSegment;
+
+    public PhotoWallAdapter mAdapter;
+    public boolean isMultiChoose = false;
+    private List<Model> FileList = new ArrayList<>();
+
+
+    public GridViewFragment() {
+        mAdapter = null;
+//        mFragmentListener = null;
+        mPwd = null;
+//        this.currentSegment = currentSegment;
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        Log.e(TAG, "onAttach: 1111");
+        super.onAttach(activity);
+        mFragmentListener = (IFragmentListener) activity;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+
+        Log.e(TAG, "onCreateView: 1111");
+        View view = inflater.inflate(R.layout.fragment_gridview, container, false);
+        unbinder = ButterKnife.bind(this, view);
+        initData();
+        initView(view);
+//        prepareItem();
+        return view;
+    }
+
+    private void initData() {
+//        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+//        mLayoutManager = new GridLayoutManager(getActivity(),1);
+//        mLayoutManager = new StaggeredGridLayoutManager(2, OrientationHelper.VERTICAL);
+
+
+    }
+
+
+    private void initView(View view) {
+//        RecyclerView rvRecyclerview = (RecyclerView) findViewById(R.id.rv_recyclerview);
+        refreshView = (SwipeRefreshLayout) view.findViewById(R.id.refreshView);
+        refreshView.setOnRefreshListener(this);
+        gvGridView.setOnItemClickListener(this);
+
+        // 设置布局管理器
+//        rvRecyclerview.setLayoutManager(mLayoutManager);
+
+// TODO: 2017/9/25 如下到底是否需要加？
+//        if (mAdapter == null && mRemoteCam.videoFolder() != null) {
+//            Log.e(TAG, "initView: 11适配器为空");
+//            mPwd = mRemoteCam.videoFolder() + "/";
+//            listDirContent(mPwd);
+//        } else {
+//            // 设置adapter
+//            Log.e(TAG, "initView: 1111 设置适配器");
+//            showDirContents();
+//        }
+
+    }
+
+    private void listDirContent(String path) {
+        if (path != null) {
+            mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_LS, path);
+        }
+    }
+
+    public void setRemoteCam(RemoteCam cam) {
+        mRemoteCam = cam;
+    }
+
+
+    public void updateDirContents(JSONObject parser) {
+        refreshView.setRefreshing(false);
+
+//        refreshView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                refreshView.setRefreshing(false);
+//            }
+//        });
+
+        ArrayList<Model> models = new ArrayList<Model>();
+
+        try {
+            JSONArray contents = parser.getJSONArray("listing");//
+
+            for (int i = 0; i < contents.length(); i++) {
+                Model item = new Model(contents.getJSONObject(i).toString());//
+
+                if ((item.getName().endsWith(".MP4")) || (item.getName().endsWith(".mp4")) || (item.getName().endsWith(".JPG"))) {
+                    models.add(item);
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, e.getMessage());
+        }
+        Collections.sort(models, new order());
+        if (currentSegment == 0 && models.size() > 0) {
+            models.remove(0);//
+        }
+        mPlaylist = models;
+        if (mFragmentListener != null)
+            mFragmentListener.onFragmentAction(IFragmentListener.ACTION_UPDATE_PLAYLIST, mPlaylist);
+        mAdapter = new PhotoWallAdapter(getActivity(), 0, mPlaylist, gvGridView);
+        showDirContents();
+    }
+
+    private void showDirContents() {
+        gvGridView.setAdapter(mAdapter);
+    }
+
+//    private void prepareItem() {
+//        RecyclerItem item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-11 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-12 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
+//        itemList.add(item);
+////        mAdapter.notifyDataSetChanged();
+////        recyclerview.setAdapter(mAdapter);
+//    }
+
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        if (mAdapter != null) {
+            mAdapter.cancelAllTasks();
+            mAdapter.clear();
+        }
+        mAdapter = null;
+        mPwd = null;
+        mFragmentListener = null;
+        currentSegment = 0;
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        Log.e(TAG, "onDestroyView: ");
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
+
+    @Override
+    public void onRefresh() {
+
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+        if (!isMultiChoose) {
+            Model item = (Model) parent.getItemAtPosition(position);
+            Log.e(TAG, "onItemClick: 11111 !isMultiChoose");
+            if (mFragmentListener != null) {
+                if (currentSegment == 2) {
+                    mFragmentListener.onFragmentAction(IFragmentListener.ACTION_PHOTO_DETAIL, item);
+
+                }
+            }
+        } else {
+            Log.e(TAG, "onItemClick: 11111 isMultiChoose");
+//            由getisSelectedAt函数得到item一直未被选择过返回false
+            boolean isSelected = mAdapter.getisSelectedAt(position);
+            if (!isSelected) {
+                FileList.add(mPlaylist.get(position));
+            } else {
+                FileList.remove(mPlaylist.get(position));
+            }
+
+            Log.e(TAG, "onItemClick: 111" + isSelected);
+//            如果设置为isSelected则选不中checkbox  // 选中状态的切换?
+            mAdapter.setItemisSelectedMap(position, !isSelected);
+        }
+    }
+
+    @OnClick({R.id.iv_select, R.id.iv_cancel, R.id.iv_share, R.id.iv_export, R.id.iv_delect})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.iv_select:
+                enterChoose();
+                break;
+            case R.id.iv_cancel:
+                enterCancel();
+                break;
+            case R.id.iv_share:
+                break;
+            case R.id.iv_export:
+                if (FileList.size() > 0) {
+                    if (mFragmentListener != null) {
+                        mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, FileList);
+                        mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DOWNLOAD, null);
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "请选择一个文件", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case R.id.iv_delect:
+                // TODO: 2017/9/22 待办
+                if (FileList.size() > 0) {
+                    mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, FileList);
+                    for (Model m : FileList) {
+                        if (currentSegment == 0) {
+                            mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE, mRemoteCam.videoFolder()
+                                    + "/" + m.getName());
+                        } else if (currentSegment == 1) {
+                            mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE, mRemoteCam.eventFolder()
+                                    + "/" + m.getName());
+                        } else if (currentSegment == 2) {
+                            mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE, mRemoteCam.photoFolder()
+                                    + "/" + m.getName());
+                        }
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "请先选择一个删除文件", Toast.LENGTH_LONG).show();
+                }
+                break;
+        }
+//            作用：让checkbox更新显示
+        mAdapter.notifyDataSetChanged();
+    }
+
+    private void enterChoose() {
+        isMultiChoose = true;
+        ivSelect.setVisibility(View.GONE);
+        ivCancel.setVisibility(View.VISIBLE);
+        FileList.clear();
+    }
+
+    public void enterCancel() {
+        isMultiChoose = false;
+        ivSelect.setVisibility(View.VISIBLE);
+        ivCancel.setVisibility(View.GONE);
+        FileList.clear();
+        // TODO: 2017/9/21 如下作用还不清楚
+        if (mAdapter != null) {
+            mAdapter.notifyDataSetChanged();
+            if (!mAdapter.isSelectedMap.isEmpty()) {
+                mAdapter.isSelectedMap.clear();
+            }
+        }
+    }
+
+    public void clearAdapter() {
+        if (mAdapter != null) {
+            mAdapter.clear();
+            mAdapter.cancelAllTasks();
+        }
+    }
+
+    private class order implements Comparator<Model> {
+
+        @Override
+        public int compare(Model lhs, Model rhs) {
+            return rhs.getName().compareTo(lhs.getName());
+        }
+
+    }
+
+    private class PhotoWallAdapter extends ArrayAdapter<Model>
+            // implements OnScrollListener
+    {
+        final private ArrayList<Model> mArrayList;
+
+        private Set<BitmapWorkerTask> taskCollection;
+
+        private LruCache<String, Bitmap> mMemoryCache;
+
+        private GridView mPhotoWall;
+
+        public HashMap<Integer, Boolean> isSelectedMap;//记录选择的项目和是否选中状态
+
+
+        //isMultiChoose 表示是否需要重新加载缩略图
+        public PhotoWallAdapter(Context context, int textViewResourceId, ArrayList<Model>
+                arrayList, GridView photoWall) {
+
+            super(context, textViewResourceId, arrayList);
+
+            mArrayList = arrayList;
+            mPhotoWall = photoWall;
+            isSelectedMap = new HashMap<Integer, Boolean>();
+
+            taskCollection = new HashSet<BitmapWorkerTask>();
+            int maxMemory = (int) Runtime.getRuntime().maxMemory();
+            Log.e(TAG, "PhotoWallAdapter: maxMemory = "+ maxMemory);
+            int cacheSize = maxMemory / 2;
+            mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+                @Override
+                protected int sizeOf(String key, Bitmap bitmap) {
+                    return bitmap.getByteCount();
+                }
+            };
+            loadBitmaps(0, mArrayList.size());
+
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            Model model = mArrayList.get(position);
+            View view;
+            if (convertView == null) {
+                if (currentSegment == 0) {
+                    Log.e(TAG, "getView: 111 currentSegment == 0");
+                    view = LayoutInflater.from(getContext()).inflate(R.layout
+                            .layout_normal_video, null);
+                } else if (currentSegment == 1) {
+                    Log.e(TAG, "getView: 111 currentSegment == 1");
+                    view = LayoutInflater.from(getContext()).inflate(R.layout
+                            .layout_collision_video, null);
+                } else {
+                    Log.e(TAG, "getView: 111 currentSegment == 2");
+                    view = LayoutInflater.from(getContext()).inflate(R.layout.layout_photo, null);
+                }
+            } else {
+                Log.e(TAG, "getView: 111 convertView ！= null");
+                view = convertView;
+            }
+
+
+            CheckBox cbMultiChoose = (CheckBox) view.findViewById(R.id.cb_cbx);
+
+            // TODO: 2017/9/19 先注释了如下判断
+            if (isMultiChoose) {
+                cbMultiChoose.setVisibility(View.VISIBLE);
+                // TODO: 2017/9/21 此处自己添加
+//                cbMultiChoose.setClickable(true);
+//                cbMultiChoose.setFocusable(true);//只让box被点击，防止照片被点击
+
+                cbMultiChoose.setChecked(getisSelectedAt(position)); //从hash表中获取位置选中状态，不会导致错位
+                if (currentSegment != 2) {
+//                    tvFileNum.setText("已选择" + FileList.size() + "个视频");
+                } else {
+//                    tvFileNum.setText("已选择" + FileList.size() + "张照片");
+                }
+            } else {
+                cbMultiChoose.setVisibility(View.INVISIBLE);
+
+            }
+
+            TextView nameView = (TextView) view.findViewById(R.id.tv_title);
+
+//            int i = model.getName().indexOf('_');
+//            int i2 = model.getName().lastIndexOf('_');
+//            int i3 = model.getName().indexOf('.');
+//            String date = model.getName().substring(i + 1, i2);
+//            StringBuilder sb = new StringBuilder(date);
+//            sb.insert(6, '-');
+//            sb.insert(4, '-');
+//            String time = model.getName().substring(i2 + 1, i3 - 1);
+//            StringBuilder sb2 = new StringBuilder(time);
+//            sb2.insert(4, ':').insert(2, ':');
+//            nameView.setText(sb.toString() + "  " + sb2.toString());
+//           // nameView.setText(model.getName());
+
+            String mData = model.getName().substring(0, 10);
+            String mTime = model.getName().substring(11, 19);
+            nameView.setText(mData + " " + mTime);
+
+            String url = null;
+
+            if (currentSegment == 0) {
+//                url = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) + "/Thumb/" +
+//                        model.getThumbFileName();
+                url = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) + "/" +
+                        model.getName();
+//                imageUrl=http://192.168.42.1/SD0/NORMAL/2017-08-30-16-48-20.mp4
+            } else if (currentSegment == 1) {
+//                url = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) + "/Thumb/" +
+//                        model.getThumbFileName();
+                url = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) + "/" +
+                        model.getName();
+            } else if (currentSegment == 2) {
+//                url = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) + "/Thumb/" +
+//                        model.getThumbFileName();
+                url = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) + "/" +
+                        model.getName();  //删除二级文件夹
+            }
+            ImageView photo;
+            if (currentSegment == 2) {
+                photo = (ImageView) view.findViewById(R.id.iv_pic_photo);
+            } else {
+                photo = (ImageView) view.findViewById(R.id.iv_icon);
+            }
+            photo.setTag(url);
+            setImageView(url, photo);
+            return view;
+        }
+
+        private void setImageView(String imageUrl, ImageView imageView) {
+            Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+
+            } else {
+                imageView.setImageResource(R.mipmap.empty_photo);
+            }
+
+        }
+
+        public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+            if (getBitmapFromMemoryCache(key) == null) {
+                mMemoryCache.put(key, bitmap);
+            }
+        }
+
+        public Bitmap getBitmapFromMemoryCache(String key) {
+            return mMemoryCache.get(key);
+        }
+
+
+        private void loadBitmaps(int firstVisibleItem, int visibleItemCount) {
+            try {
+                for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
+                    Model model = mArrayList.get(i);
+                    String imageUrl;
+                    if (currentSegment == 0) {
+//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) +
+//                                "/Thumb/" + model.getThumbFileName();
+                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) + "/" + model.getName();
+                    } else if (currentSegment == 1) {
+//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) +
+//                                "/Thumb/" + model.getThumbFileName();
+                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) + "/" + model.getName();
+                    } else {
+//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) +
+//                                "/Thumb/" + model.getThumbFileName();
+                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) + "/" + model.getName();  //删除二级文件夹
+                    }
+                    Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
+                    if (bitmap == null) {
+                        BitmapWorkerTask task = new BitmapWorkerTask();
+                        taskCollection.add(task);
+                        task.execute(imageUrl);
+                    } else {
+                        ImageView imageView = (ImageView) mPhotoWall.findViewWithTag(imageUrl);
+                        if (imageView != null && bitmap != null) {
+                            imageView.setImageBitmap(bitmap);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        public void cancelAllTasks() {
+            if (taskCollection != null) {
+                for (BitmapWorkerTask task : taskCollection) {
+                    task.cancel(false);
+                }
+            }
+        }
+
+        public boolean getisSelectedAt(int position) {
+
+            //如果当前位置的key值为空，则表示该item未被选择过，返回false，否则返回true
+            if (isSelectedMap.get(position) != null) {
+                return isSelectedMap.get(position);
+            }
+            return false;
+        }
+
+        public void setItemisSelectedMap(int position, boolean isSelected) {
+            this.isSelectedMap.put(position, isSelected);
+            notifyDataSetChanged();
+        }
+
+        class BitmapWorkerTask extends AsyncTask<String, Void, Bitmap> {
+
+            private String imageUrl;
+
+            @Override
+            protected Bitmap doInBackground(String... params) {
+                imageUrl = params[0];
+                Bitmap bitmap = downloadBitmap(params[0]);
+                if (bitmap != null) {
+                    addBitmapToMemoryCache(params[0], bitmap);
+                }
+                return bitmap;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap) {
+                super.onPostExecute(bitmap);
+                ImageView imageView = (ImageView) mPhotoWall.findViewWithTag(imageUrl);
+                if (imageView != null && bitmap != null) {
+                    imageView.setImageBitmap(bitmap);
+                }
+                taskCollection.remove(this);
+            }
+
+            //如何下载yuv mListener.onFragmentAction(IFragmentListener.ACTION_FS_DOWNLOAD, null);
+            private Bitmap downloadBitmap(String imageUrl) {
+                Bitmap bitmap = null;
+                HttpURLConnection con = null;
+                try {
+//                    Log.e(TAG, "downloadBitmap: 1111 tryHttpURLConnection");
+                    URL url = new URL(imageUrl);
+                    con = (HttpURLConnection) url.openConnection();
+                    con.setConnectTimeout(5 * 1000);
+                    con.setReadTimeout(10 * 1000);
+                    con.setDoInput(true);
+                    con.setDoOutput(true);
+
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 16;  //16-free 2.3M
+
+//                    bitmap = BitmapFactory.decodeStream(con.getInputStream());
+                    bitmap = BitmapFactory.decodeStream(con.getInputStream(),null,options);
+                } catch (Exception e) {
+//                    Log.e(TAG, "downloadBitmap: Exception e");
+                    e.printStackTrace();
+                } finally {
+                    if (con != null) {
+                        con.disconnect();
+                    }
+                }
+                return bitmap;
+            }
+        }
+    }
+
+
+}

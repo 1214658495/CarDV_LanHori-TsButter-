@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/bg_all"
+    tools:context="com.bydauto.tsbutter.MainActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/x720"
+        android:layout_marginTop="@dimen/x75"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_segmentView"
+            android:layout_width="@dimen/y428"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ImageView
+                android:id="@+id/iv_back"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y58"
+                android:src="@mipmap/ic_back" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y30"
+                android:src="@mipmap/line_blowback" />
+
+            <ImageView
+                android:id="@+id/iv_recordSelected"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y58"
+                android:src="@mipmap/ic_rec_selected" />
+
+            <ImageView
+                android:id="@+id/iv_normalVideoList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y58"
+                android:src="@mipmap/icon_normalvideolist" />
+
+            <ImageView
+                android:id="@+id/iv_photoList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y58"
+                android:src="@mipmap/ic_photolist" />
+
+            <ImageView
+                android:id="@+id/iv_eventVideoList"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/y58"
+                android:src="@mipmap/ic_eventvideolist" />
+        </LinearLayout>
+
+
+        <!--<FrameLayout-->
+        <!--android:id="@+id/fl_editView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_above="@+id/fl_contentView"-->
+        <!--android:layout_below="@+id/fl_segmentView">-->
+
+        <!--</FrameLayout>-->
+
+        <FrameLayout
+            android:id="@+id/fl_contentView"
+            android:layout_width="@dimen/y1310"
+            android:layout_height="match_parent"
+            android:layout_toEndOf="@+id/ll_segmentView">
+
+        </FrameLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_menu"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/y248"
+            android:layout_alignParentBottom="true"
+            android:background="@mipmap/bg_left"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/y50"
+                android:layout_weight="1"
+                android:src="@mipmap/icon_album" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/y51"
+                android:layout_weight="1"
+                android:src="@mipmap/icon_takephoto" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/y41"
+                android:layout_weight="1"
+                android:src="@mipmap/icon_rec_on" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/y41"
+                android:layout_weight="1.3"
+                android:src="@mipmap/icon_mic_on" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="@dimen/y41"
+                android:layout_weight="1"
+                android:src="@mipmap/icon_setting" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/fl_all"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </FrameLayout>
+
+    </RelativeLayout>
+</RelativeLayout>
