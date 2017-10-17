@@ -439,7 +439,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             taskCollection = new HashSet<BitmapWorkerTask>();
             int maxMemory = (int) Runtime.getRuntime().maxMemory();
             Log.e(TAG, "PhotoWallAdapter: maxMemory = "+ maxMemory);
-            int cacheSize = maxMemory / 2;
+            int cacheSize = maxMemory / 8;
             mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
                 @Override
                 protected int sizeOf(String key, Bitmap bitmap) {
@@ -552,7 +552,8 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             }
             photo.setTag(url);
             setImageView(url, photo);
-            loadBitmaps(0, mArrayList.size());
+//            loadBitmaps(0, mArrayList.size());
+            loadBitmaps(photo,url);
             return view;
         }
 
@@ -578,7 +579,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         }
 
 
-        private void loadBitmaps(int firstVisibleItem, int visibleItemCount) {
+       /** private void loadBitmaps(int firstVisibleItem, int visibleItemCount) {
             try {
                 for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
                     Model model = mArrayList.get(i);
@@ -612,6 +613,25 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                 e.printStackTrace();
             }
         }
+        */
+
+
+       public void loadBitmaps(ImageView imageView, String imageUrl) {
+           try {
+               Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
+               if (bitmap == null) {
+                   BitmapWorkerTask task = new BitmapWorkerTask();
+                   taskCollection.add(task);
+                   task.execute(imageUrl);
+               } else {
+                   if (imageView != null && bitmap != null) {
+                       imageView.setImageBitmap(bitmap);
+                   }
+               }
+           } catch (Exception e) {
+               e.printStackTrace();
+           }
+       }
 
         public void cancelAllTasks() {
             if (taskCollection != null) {
@@ -814,7 +834,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 //我添加的
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     BitmapFactory.Options options = new BitmapFactory.Options();
-                    options.inSampleSize = 16;  //16-free 2.3M
+                    options.inSampleSize = 18;  //16-free 2.3M
                     bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(),null,options);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     InputStream inputimage = new ByteArrayInputStream(baos.toByteArray());
@@ -877,6 +897,4 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             }
         }
     }
-
-
 }
