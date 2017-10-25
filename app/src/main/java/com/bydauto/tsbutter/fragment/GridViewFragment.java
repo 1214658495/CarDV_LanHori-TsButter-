@@ -831,7 +831,6 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 //                    bitmap = BitmapFactory.decodeStream(con.getInputStream());
                     bitmap = BitmapFactory.decodeStream(con.getInputStream(), null, options);
                 } catch (Exception e) {
-//                    Log.e(TAG, "downloadBitmap: Exception e");
                     e.printStackTrace();
                 } finally {
                     if (con != null) {
