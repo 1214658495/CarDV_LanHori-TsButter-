@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements IFragmentListener
     private RecordFragment mRecordFragment;
     private GridViewFragment mGridViewFragment;
     public RemoteCam mRemoteCam;
-    public ArrayList<Model> mPlaylist; //播放列表
+    public ArrayList<Model> mPlaylist; //  播放列表
     private List<Model> selectedFiles;
     private int selectedFilesCount;
     private static int hadDownloadedFlag = 0;
