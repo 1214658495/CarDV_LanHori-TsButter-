@@ -15,12 +15,12 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.bydauto.tsbutter.Connect.IChannelListener;
-import com.bydauto.tsbutter.Connect.IFragmentListener;
-import com.bydauto.tsbutter.Fragment.GridViewFragment;
-import com.bydauto.tsbutter.Fragment.PhotoDetailFragment;
-import com.bydauto.tsbutter.Fragment.RecordFragment;
-import com.bydauto.tsbutter.Unit.LogcatHelper;
+import com.bydauto.tsbutter.connect.IChannelListener;
+import com.bydauto.tsbutter.connect.IFragmentListener;
+import com.bydauto.tsbutter.fragment.GridViewFragment;
+import com.bydauto.tsbutter.fragment.PhotoDetailFragment;
+import com.bydauto.tsbutter.fragment.RecordFragment;
+import com.bydauto.tsbutter.unit.LogcatHelper;
 
 import org.json.JSONObject;
 

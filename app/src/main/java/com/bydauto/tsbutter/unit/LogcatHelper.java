@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Unit;
+package com.bydauto.tsbutter.unit;
 
 import android.content.Context;
 import android.os.Environment;
@@ -54,8 +54,9 @@ public class LogcatHelper {
     }
 
     public void start() {
-        if (mLogDumper == null)
+        if (mLogDumper == null) {
             mLogDumper = new LogDumper(String.valueOf(mPId), PATH_LOGCAT);
+        }
         mLogDumper.start();
     }
 

@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Unit;
+package com.bydauto.tsbutter.unit;
 
 public class ServerConfig {
 	private static final String SERVER_HOME = "http://192.168.42.4:8080";// ��������ַ

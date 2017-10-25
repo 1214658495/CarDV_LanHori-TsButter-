@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Connect;
+package com.bydauto.tsbutter.connect;
 
 import android.util.Log;
 
@@ -91,8 +91,9 @@ public class DataChannel {
 			while (mContinueTx) {
 //				从输入流里读数据到buffer里
 				int read = in.read(buffer);
-				if (read <= 0)
+				if (read <= 0) {
 					break;
+				}
 //				从buffer里写数据到输出流里
 				mOutputStream.write(buffer, 0, read);
 				mTxBytes += read;

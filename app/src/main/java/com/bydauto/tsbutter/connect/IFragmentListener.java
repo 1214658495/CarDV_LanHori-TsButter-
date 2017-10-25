@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Connect;
+package com.bydauto.tsbutter.connect;
 
 /**
  * Created by byd_tw on 2017/8/22.

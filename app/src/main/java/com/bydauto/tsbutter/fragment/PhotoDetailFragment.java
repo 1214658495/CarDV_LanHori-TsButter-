@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Fragment;
+package com.bydauto.tsbutter.fragment;
 
 import android.app.Fragment;
 import android.graphics.Bitmap;
@@ -16,7 +16,7 @@ import android.widget.ImageView;
 
 import com.bydauto.tsbutter.Model;
 import com.bydauto.tsbutter.R;
-import com.bydauto.tsbutter.Unit.ServerConfig;
+import com.bydauto.tsbutter.unit.ServerConfig;
 
 import java.net.HttpURLConnection;
 import java.net.URL;

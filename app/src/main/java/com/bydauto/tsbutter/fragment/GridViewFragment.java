@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Fragment;
+package com.bydauto.tsbutter.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.util.LruCache;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bydauto.tsbutter.Connect.IFragmentListener;
+import com.bydauto.tsbutter.connect.IFragmentListener;
 import com.bydauto.tsbutter.Model;
 import com.bydauto.tsbutter.R;
 import com.bydauto.tsbutter.RemoteCam;
-import com.bydauto.tsbutter.Unit.ServerConfig;
+import com.bydauto.tsbutter.unit.ServerConfig;
 import com.jakewharton.disklrucache.DiskLruCache;
 
 import org.json.JSONArray;
@@ -53,7 +54,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -63,19 +63,16 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
 
-//import static android.widget.AdapterView.*;
 
 /**
- * Created by byd_tw on 2017/9/11.
+ * @author byd_tw
  */
-
 public class GridViewFragment extends Fragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "GridViewFragment";
 
     @BindView(R.id.gv_gridView)
     GridView gvGridView;
 
-    //    @BindView(R.id.refreshView)
     public SwipeRefreshLayout refreshView;
 
     @BindView(R.id.iv_cancel)
@@ -103,7 +100,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 
     public PhotoWallAdapter mAdapter;
     public boolean isMultiChoose = false;
-    private List<Model> FileList = new ArrayList<>();
+    private List<Model> fileList = new ArrayList<>();
 
 
     public GridViewFragment() {
@@ -177,20 +174,14 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
     public void updateDirContents(JSONObject parser) {
         refreshView.setRefreshing(false);
 
-//        refreshView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                refreshView.setRefreshing(false);
-//            }
-//        });
 
-        ArrayList<Model> models = new ArrayList<Model>();
+        ArrayList<Model> models = new ArrayList<>();
 
         try {
-            JSONArray contents = parser.getJSONArray("listing");//
+            JSONArray contents = parser.getJSONArray("listing");
 
             for (int i = 0; i < contents.length(); i++) {
-                Model item = new Model(contents.getJSONObject(i).toString());//
+                Model item = new Model(contents.getJSONObject(i).toString());
 
                 if ((item.getName().endsWith(".MP4")) || (item.getName().endsWith(".mp4")) || (item.getName().endsWith(".JPG"))) {
                     models.add(item);
@@ -199,13 +190,14 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
-        Collections.sort(models, new order());
+        Collections.sort(models, new Order());
         if (currentSegment == 0 && models.size() > 0) {
-            models.remove(0);//
+            models.remove(0);
         }
         mPlaylist = models;
-        if (mFragmentListener != null)
+        if (mFragmentListener != null) {
             mFragmentListener.onFragmentAction(IFragmentListener.ACTION_UPDATE_PLAYLIST, mPlaylist);
+        }
         mAdapter = new PhotoWallAdapter(getActivity(), 0, mPlaylist, gvGridView);
         showDirContents();
     }
@@ -213,58 +205,6 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
     private void showDirContents() {
         gvGridView.setAdapter(mAdapter);
     }
-
-//    private void prepareItem() {
-//        RecyclerItem item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-11 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-12 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item = new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-//        item= new RecyclerItem(R.drawable.ic_launcher,"2017-02-13 15:00:00");
-//        itemList.add(item);
-////        mAdapter.notifyDataSetChanged();
-////        recyclerview.setAdapter(mAdapter);
-//    }
-
 
     @Override
     public void onPause() {
@@ -316,9 +256,9 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 //            由getisSelectedAt函数得到item一直未被选择过返回false
             boolean isSelected = mAdapter.getisSelectedAt(position);
             if (!isSelected) {
-                FileList.add(mPlaylist.get(position));
+                fileList.add(mPlaylist.get(position));
             } else {
-                FileList.remove(mPlaylist.get(position));
+                fileList.remove(mPlaylist.get(position));
             }
 
             Log.e(TAG, "onItemClick: 111" + isSelected);
@@ -339,9 +279,9 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             case R.id.iv_share:
                 break;
             case R.id.iv_export:
-                if (FileList.size() > 0) {
+                if (fileList.size() > 0) {
                     if (mFragmentListener != null) {
-                        mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, FileList);
+                        mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, fileList);
                         mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DOWNLOAD, null);
                     }
                 } else {
@@ -350,9 +290,9 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                 break;
             case R.id.iv_delect:
                 // TODO: 2017/9/22 待办
-                if (FileList.size() > 0) {
-                    mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, FileList);
-                    for (Model m : FileList) {
+                if (fileList.size() > 0) {
+                    mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE_MULTI, fileList);
+                    for (Model m : fileList) {
                         if (currentSegment == 0) {
                             mFragmentListener.onFragmentAction(IFragmentListener.ACTION_FS_DELETE, mRemoteCam.videoFolder()
                                     + "/" + m.getName());
@@ -368,6 +308,8 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                     Toast.makeText(getActivity(), "请先选择一个删除文件", Toast.LENGTH_LONG).show();
                 }
                 break;
+            default:
+                break;
         }
 //            作用：让checkbox更新显示
         mAdapter.notifyDataSetChanged();
@@ -377,20 +319,20 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         isMultiChoose = true;
         ivSelect.setVisibility(View.GONE);
         ivCancel.setVisibility(View.VISIBLE);
-        FileList.clear();
+        fileList.clear();
     }
 
     public void enterCancel() {
         isMultiChoose = false;
         ivSelect.setVisibility(View.VISIBLE);
         ivCancel.setVisibility(View.GONE);
-        FileList.clear();
+        fileList.clear();
         // TODO: 2017/9/21 如下作用还不清楚
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
-            if (!mAdapter.isSelectedMap.isEmpty()) {
-                mAdapter.isSelectedMap.clear();
-            }
+//            if (!mAdapter.isSelectedMap.isEmpty()) {//此处被我屏蔽了
+            mAdapter.isSelectedMap.clear();
+//            }
         }
     }
 
@@ -401,7 +343,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
-    private class order implements Comparator<Model> {
+    private class Order implements Comparator<Model> {
 
         @Override
         public int compare(Model lhs, Model rhs) {
@@ -422,8 +364,10 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         private DiskLruCache mDiskLruCache;
 
         private GridView mPhotoWall;
-
-        public HashMap<Integer, Boolean> isSelectedMap;//记录选择的项目和是否选中状态
+        //记录选择的项目和是否选中状态
+        //        public HashMap<Integer, Boolean> isSelectedMap;
+        // 记录选择的项目和是否选中状态
+        public SparseBooleanArray isSelectedMap;
 
 
         //isMultiChoose 表示是否需要重新加载缩略图
@@ -434,11 +378,12 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 
             mArrayList = arrayList;
             mPhotoWall = photoWall;
-            isSelectedMap = new HashMap<Integer, Boolean>();
+//            isSelectedMap = new HashMap<Integer, Boolean>();
+            isSelectedMap = new SparseBooleanArray();
 
             taskCollection = new HashSet<BitmapWorkerTask>();
             int maxMemory = (int) Runtime.getRuntime().maxMemory();
-            Log.e(TAG, "PhotoWallAdapter: maxMemory = "+ maxMemory);
+            Log.e(TAG, "PhotoWallAdapter: maxMemory = " + maxMemory);
             int cacheSize = maxMemory / 8;
             mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
                 @Override
@@ -494,12 +439,12 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                 // TODO: 2017/9/21 此处自己添加
 //                cbMultiChoose.setClickable(true);
 //                cbMultiChoose.setFocusable(true);//只让box被点击，防止照片被点击
-
-                cbMultiChoose.setChecked(getisSelectedAt(position)); //从hash表中获取位置选中状态，不会导致错位
+//从hash表中获取位置选中状态，不会导致错位
+                cbMultiChoose.setChecked(getisSelectedAt(position));
                 if (currentSegment != 2) {
-//                    tvFileNum.setText("已选择" + FileList.size() + "个视频");
+//                    tvFileNum.setText("已选择" + fileList.size() + "个视频");
                 } else {
-//                    tvFileNum.setText("已选择" + FileList.size() + "张照片");
+//                    tvFileNum.setText("已选择" + fileList.size() + "张照片");
                 }
             } else {
                 cbMultiChoose.setVisibility(View.INVISIBLE);
@@ -553,7 +498,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             photo.setTag(url);
             setImageView(url, photo);
 //            loadBitmaps(0, mArrayList.size());
-            loadBitmaps(photo,url);
+            loadBitmaps(photo, url);
             return view;
         }
 
@@ -579,59 +524,60 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         }
 
 
-       /** private void loadBitmaps(int firstVisibleItem, int visibleItemCount) {
+        /**
+         * private void loadBitmaps(int firstVisibleItem, int visibleItemCount) {
+         * try {
+         * for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
+         * Model model = mArrayList.get(i);
+         * String imageUrl;
+         * if (currentSegment == 0) {
+         * //  imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) +
+         * //           "/Thumb/" + model.getThumbFileName();
+         * imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) + "/" + model.getName();
+         * } else if (currentSegment == 1) {
+         * //     imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) +
+         * //                 "/Thumb/" + model.getThumbFileName();
+         * imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) + "/" + model.getName();
+         * } else {
+         * //              imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) +
+         * //               "/Thumb/" + model.getThumbFileName();
+         * imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) + "/" + model.getName();  //删除二级文件夹
+         * }
+         * Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
+         * if (bitmap == null) {
+         * BitmapWorkerTask task = new BitmapWorkerTask();
+         * taskCollection.add(task);
+         * task.execute(imageUrl);
+         * } else {
+         * ImageView imageView = (ImageView) mPhotoWall.findViewWithTag(imageUrl);
+         * if (imageView != null && bitmap != null) {
+         * imageView.setImageBitmap(bitmap);
+         * }
+         * }
+         * }
+         * } catch (Exception e) {
+         * e.printStackTrace();
+         * }
+         * }
+         */
+
+
+        public void loadBitmaps(ImageView imageView, String imageUrl) {
             try {
-                for (int i = firstVisibleItem; i < firstVisibleItem + visibleItemCount; i++) {
-                    Model model = mArrayList.get(i);
-                    String imageUrl;
-                    if (currentSegment == 0) {
-//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) +
-//                                "/Thumb/" + model.getThumbFileName();
-                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.videoFolder().substring(4) + "/" + model.getName();
-                    } else if (currentSegment == 1) {
-//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) +
-//                                "/Thumb/" + model.getThumbFileName();
-                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.eventFolder().substring(4) + "/" + model.getName();
-                    } else {
-//                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) +
-//                                "/Thumb/" + model.getThumbFileName();
-                        imageUrl = "http://" + ServerConfig.HOST + mRemoteCam.photoFolder().substring(4) + "/" + model.getName();  //删除二级文件夹
-                    }
-                    Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
-                    if (bitmap == null) {
-                        BitmapWorkerTask task = new BitmapWorkerTask();
-                        taskCollection.add(task);
-                        task.execute(imageUrl);
-                    } else {
-                        ImageView imageView = (ImageView) mPhotoWall.findViewWithTag(imageUrl);
-                        if (imageView != null && bitmap != null) {
-                            imageView.setImageBitmap(bitmap);
-                        }
+                Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
+                if (bitmap == null) {
+                    BitmapWorkerTask task = new BitmapWorkerTask();
+                    taskCollection.add(task);
+                    task.execute(imageUrl);
+                } else {
+                    if (imageView != null && bitmap != null) {
+                        imageView.setImageBitmap(bitmap);
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        */
-
-
-       public void loadBitmaps(ImageView imageView, String imageUrl) {
-           try {
-               Bitmap bitmap = getBitmapFromMemoryCache(imageUrl);
-               if (bitmap == null) {
-                   BitmapWorkerTask task = new BitmapWorkerTask();
-                   taskCollection.add(task);
-                   task.execute(imageUrl);
-               } else {
-                   if (imageView != null && bitmap != null) {
-                       imageView.setImageBitmap(bitmap);
-                   }
-               }
-           } catch (Exception e) {
-               e.printStackTrace();
-           }
-       }
 
         public void cancelAllTasks() {
             if (taskCollection != null) {
@@ -713,7 +659,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         public boolean getisSelectedAt(int position) {
 
             //如果当前位置的key值为空，则表示该item未被选择过，返回false，否则返回true
-            if (isSelectedMap.get(position) != null) {
+            if (isSelectedMap.get(position)) {
                 return isSelectedMap.get(position);
             }
             return false;
@@ -758,18 +704,18 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 
                     /**
                      *
-                    if (snapShot != null) {
-                        fileInputStream = (FileInputStream) snapShot.getInputStream(0);
-                        fileDescriptor = fileInputStream.getFD();
-                    }
-                    // 将缓存数据解析成Bitmap对象
-                    Bitmap bitmap = null;
-                    if (fileDescriptor != null) {
-                        bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
-//                        BitmapFactory.Options options = new BitmapFactory.Options();
-//                        options.inSampleSize = 16;
-//                        bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
-                    }
+                     if (snapShot != null) {
+                     fileInputStream = (FileInputStream) snapShot.getInputStream(0);
+                     fileDescriptor = fileInputStream.getFD();
+                     }
+                     // 将缓存数据解析成Bitmap对象
+                     Bitmap bitmap = null;
+                     if (fileDescriptor != null) {
+                     bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor);
+                     // BitmapFactory.Options options = new BitmapFactory.Options();
+                     // options.inSampleSize = 16;
+                     //  bitmap = BitmapFactory.decodeFileDescriptor(fileDescriptor, null, options);
+                     }
                      */
                     Bitmap bitmap = null;
                     if (snapShot != null) {
@@ -787,15 +733,15 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                 } finally {
                     /**
                      *
-                    if (fileDescriptor == null && fileInputStream != null) {
-                        try {
-                            fileInputStream.close();
-                        } catch (IOException e) {
-                        }
-                    }
+                     if (fileDescriptor == null && fileInputStream != null) {
+                     try {
+                     fileInputStream.close();
+                     } catch (IOException e) {
+                     }
+                     }
                      */
 
-                    if ( is != null) {
+                    if (is != null) {
                         try {
                             is.close();
                         } catch (IOException e) {
@@ -818,8 +764,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
             /**
              * 建立HTTP请求，并获取Bitmap对象。
              *
-             * @param urlString
-             *            图片的URL地址
+             * @param urlString 图片的URL地址
              * @return 解析后的Bitmap对象
              */
             private boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
@@ -835,7 +780,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     BitmapFactory.Options options = new BitmapFactory.Options();
                     options.inSampleSize = 18;  //16-free 2.3M
-                    bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(),null,options);
+                    bitmap = BitmapFactory.decodeStream(urlConnection.getInputStream(), null, options);
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     InputStream inputimage = new ByteArrayInputStream(baos.toByteArray());
                     in = new BufferedInputStream(inputimage, 8 * 1024);
@@ -884,7 +829,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
                     options.inSampleSize = 16;  //16-free 2.3M
 
 //                    bitmap = BitmapFactory.decodeStream(con.getInputStream());
-                    bitmap = BitmapFactory.decodeStream(con.getInputStream(),null,options);
+                    bitmap = BitmapFactory.decodeStream(con.getInputStream(), null, options);
                 } catch (Exception e) {
 //                    Log.e(TAG, "downloadBitmap: Exception e");
                     e.printStackTrace();

@@ -19,7 +19,7 @@
  * or title under
  * any patent, copyright, or mask work right to the code.
  */
-package com.bydauto.tsbutter.Connect;
+package com.bydauto.tsbutter.connect;
 
 import android.util.Log;
 
@@ -171,7 +171,8 @@ public abstract class CmdChannel {
     }
 
     private boolean checkSessionID() {
-        if (!mCheckSessionId || (mSessionId > 0)) return true;
+        if (!mCheckSessionId || (mSessionId > 0)){ return true;}
+
 
         if (!mAutoStartSession) {
             mListener.onChannelEvent(IChannelListener.CMD_CHANNEL_ERROR_INVALID_TOKEN, null);
@@ -268,7 +269,9 @@ public abstract class CmdChannel {
     }
 
     public synchronized boolean listDir(String dir) {
-        if (!checkSessionID()) return false;
+        if (!checkSessionID()) {
+            return false;
+        }
         mListener.onChannelEvent(IChannelListener.CMD_CHANNEL_EVENT_START_LS, null);
         return sendRequest("{\"token\":" + mSessionId + ",\"msg_id\":" + AMBA_LS + "," +
                 "\"param\":\"" + dir + " -D -S\"}");
@@ -602,7 +605,9 @@ public abstract class CmdChannel {
                 String msg;
                 while (true) {
                     msg = readFromChannel();
-                    if (msg == null) break;
+                    if (msg == null) {
+                        break;
+                    }
 
                     // continue to read until we got a valid
                     // JSON message

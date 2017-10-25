@@ -1,4 +1,4 @@
-package com.bydauto.tsbutter.Fragment;
+package com.bydauto.tsbutter.fragment;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.bydauto.tsbutter.Connect.IFragmentListener;
+import com.bydauto.tsbutter.connect.IFragmentListener;
 import com.bydauto.tsbutter.R;
 import com.bydauto.tsbutter.RemoteCam;
 
