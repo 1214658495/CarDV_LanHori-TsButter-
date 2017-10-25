@@ -65,7 +65,7 @@ import butterknife.Unbinder;
 
 
 /**
- * @author byd_tw
+ * @author byd_tw11111
  */
 public class GridViewFragment extends Fragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private static final String TAG = "GridViewFragment";
