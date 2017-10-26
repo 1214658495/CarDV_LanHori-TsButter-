@@ -330,7 +330,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         // TODO: 2017/9/21 如下作用还不清楚
         if (mAdapter != null) {
             mAdapter.notifyDataSetChanged();
-//            if (!mAdapter.isSelectedMap.isEmpty()) {//此处被我屏蔽了
+//            if (!mAdapter.isSelectedMap.isEmpty()) {//此处被我屏蔽了，
             mAdapter.isSelectedMap.clear();
 //            }
         }
