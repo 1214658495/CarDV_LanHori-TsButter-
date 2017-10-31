@@ -23,13 +23,14 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bydauto.tsbutter.connect.IFragmentListener;
 import com.bydauto.tsbutter.Model;
 import com.bydauto.tsbutter.R;
 import com.bydauto.tsbutter.RemoteCam;
+import com.bydauto.tsbutter.connect.IFragmentListener;
 import com.bydauto.tsbutter.unit.ServerConfig;
 import com.jakewharton.disklrucache.DiskLruCache;
 
@@ -67,7 +68,7 @@ import butterknife.Unbinder;
 /**
  * @author byd_tw11111
  */
-public class GridViewFragment extends Fragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+public class GridViewFragment extends Fragment implements AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener, AdapterView.OnItemLongClickListener {
     private static final String TAG = "GridViewFragment";
 
     @BindView(R.id.gv_gridView)
@@ -85,6 +86,8 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
     ImageView ivDelect;
     @BindView(R.id.iv_select)
     ImageView ivSelect;
+    @BindView(R.id.ll_editItemBar)
+    LinearLayout llEditItemBar;
     private ArrayList<Model> mPlaylist;
 
     private Unbinder unbinder;
@@ -143,6 +146,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         refreshView = (SwipeRefreshLayout) view.findViewById(R.id.refreshView);
         refreshView.setOnRefreshListener(this);
         gvGridView.setOnItemClickListener(this);
+        gvGridView.setOnItemLongClickListener(this);
 
         // 设置布局管理器
 //        rvRecyclerview.setLayoutManager(mLayoutManager);
@@ -267,11 +271,24 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
         }
     }
 
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        if (isMultiChoose) {
+//            此处设置后再次点击，触发点击事件
+//            isMultiChoose = false;
+        } else {
+            isMultiChoose = true;
+            llEditItemBar.setVisibility(View.VISIBLE);
+            fileList.clear();
+        }
+        return false;
+    }
+
     @OnClick({R.id.iv_select, R.id.iv_cancel, R.id.iv_share, R.id.iv_export, R.id.iv_delect})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.iv_select:
-                enterChoose();
+//                enterChoose();
                 break;
             case R.id.iv_cancel:
                 enterCancel();
@@ -324,8 +341,9 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
 
     public void enterCancel() {
         isMultiChoose = false;
-        ivSelect.setVisibility(View.VISIBLE);
-        ivCancel.setVisibility(View.GONE);
+//        ivSelect.setVisibility(View.VISIBLE);
+//        ivCancel.setVisibility(View.GONE);
+        llEditItemBar.setVisibility(View.INVISIBLE);
         fileList.clear();
         // TODO: 2017/9/21 如下作用还不清楚
         if (mAdapter != null) {

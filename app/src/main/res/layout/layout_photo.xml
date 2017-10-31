@@ -5,21 +5,11 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
-    <CheckBox
-        android:id="@+id/cb_cbx"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:visibility="invisible"/>
-
     <ImageView
         android:id="@+id/iv_pic_photo"
         android:layout_height="@dimen/y60"
         android:layout_width="@dimen/x100"
-        android:layout_toEndOf="@+id/cb_cbx"
-        android:layout_marginStart="@dimen/x34"
+        android:layout_marginStart="@dimen/x55"
         android:layout_centerVertical="true"
         android:background="#ffffff"
         android:scaleType="centerCrop"/>
@@ -37,7 +27,7 @@
 
     <TextView
         android:id="@+id/tv_title"
-        android:layout_toEndOf="@+id/iv_icon"
+        android:layout_toEndOf="@+id/iv_pic_photo"
         android:layout_marginStart="@dimen/x25"
         android:layout_centerInParent="true"
         android:text="title"
@@ -62,5 +52,16 @@
         <!--android:layout_height="wrap_content"-->
         <!--android:layout_width="wrap_content"-->
         <!--/>-->
+
+    <CheckBox
+        android:id="@+id/cb_cbx"
+        android:layout_toEndOf="@+id/iv_pic_photo"
+        android:layout_marginStart="@dimen/x660"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:visibility="invisible"/>
 
 </RelativeLayout>
