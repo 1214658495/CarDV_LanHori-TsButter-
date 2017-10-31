@@ -274,7 +274,7 @@ public class GridViewFragment extends Fragment implements AdapterView.OnItemClic
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         if (isMultiChoose) {
-//            此处设置后再次点击，触发点击事件
+//            此处设置后再次点击，触发点击事件。
 //            isMultiChoose = false;
         } else {
             isMultiChoose = true;
